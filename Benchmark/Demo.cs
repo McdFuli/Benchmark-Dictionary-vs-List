@@ -1,53 +1,68 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json;
 
 namespace Benchmark
 {
     public class Demo
     {
-        private readonly string path = @"C:\Users\gfuli\Documents\Estudos\Benchmark\Benchmark\JSON\data.json";
+        private readonly string path = @"Path";
+
         public Demo()
         {
         }
 
-        //[Benchmark]
-        public void AddToList(string currentPath = null)
+        [Benchmark]
+        public void AddToList()
         {
             List<BenchmarkModel> benchList = new List<BenchmarkModel>();
 
-            StreamReader json = new StreamReader(path);
+            List<BenchmarkModel> gm = getJson(path);
 
-                object benc = GetJson(json.ReadToEnd());
-
-            for (int i = 0; i < 1000; i++)
+            foreach (var benc in gm)
             {
-                
                 benchList.Add(new BenchmarkModel()
                 {
+                    Choices = benc.Choices,
+                    Code = benc.Code,
+                    Dimensions = benc.Dimensions,
+                    Images = benc.Images,
+                    IsInOutage = benc.IsInOutage,
+                    Names = benc.Names,
+                    PriceTags = benc.PriceTags,
+                    SelectedGrill = benc.SelectedGrill,
+                    ShouldShow = benc.ShouldShow
                 });
             }
         }
 
-        //[Benchmark]
+        [Benchmark]
         public void AddToDictionary()
         {
             var benchDictionary = new Dictionary<int, BenchmarkModel>();
 
-            for (int i = 0; i < 1000; i++)
+            var gm = getJson(path);
+
+            for (int i = 0; i < gm.Count; i++)
             {
                 benchDictionary.Add(i, new BenchmarkModel()
                 {
+                    Choices = gm[i].Choices,
+                    Code = gm[i].Code,
+                    Dimensions = gm[i].Dimensions,
+                    Images = gm[i].Images,
+                    IsInOutage = gm[i].IsInOutage,
+                    Names = gm[i].Names,
+                    PriceTags = gm[i].PriceTags,
+                    SelectedGrill = gm[i].SelectedGrill,
+                    ShouldShow = gm[i].ShouldShow
                 });
             }
         }
 
-        public object GetJson(string json)
+        public List<BenchmarkModel> getJson(string path)
         {
-            var jsonDeserialized = JsonConvert.DeserializeObject(json);
-
-            return jsonDeserialized;
+            List<BenchmarkModel> gm = JsonConvert.DeserializeObject<List<BenchmarkModel>>(File.ReadAllText(path));
+            return gm;
         }
     }
 }
