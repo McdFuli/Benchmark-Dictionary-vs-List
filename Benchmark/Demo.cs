@@ -1,18 +1,21 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using Newtonsoft.Json;
 
 namespace Benchmark
 {
+    [SimpleJob(RuntimeMoniker.Net60)]
     public class Demo
     {
-        private readonly string path = @"Path";
+        private readonly string path = Path.Combine(AppContext.BaseDirectory, "JSON\\data.json");
+        private const int IdKeyOrValue = 700;
 
         public Demo()
         {
         }
 
         [Benchmark]
-        public void AddToList()
+        public List<BenchmarkModel> AddToList()
         {
             List<BenchmarkModel> benchList = new List<BenchmarkModel>();
 
@@ -20,8 +23,10 @@ namespace Benchmark
 
             foreach (var benc in gm)
             {
+                int i = 0;
                 benchList.Add(new BenchmarkModel()
                 {
+                    Id = i,
                     Choices = benc.Choices,
                     Code = benc.Code,
                     Dimensions = benc.Dimensions,
@@ -32,11 +37,13 @@ namespace Benchmark
                     SelectedGrill = benc.SelectedGrill,
                     ShouldShow = benc.ShouldShow
                 });
+                i++;
             }
+            return benchList;
         }
 
         [Benchmark]
-        public void AddToDictionary()
+        public Dictionary<int, BenchmarkModel> AddToDictionary()
         {
             var benchDictionary = new Dictionary<int, BenchmarkModel>();
 
@@ -46,6 +53,7 @@ namespace Benchmark
             {
                 benchDictionary.Add(i, new BenchmarkModel()
                 {
+                    Id = i,
                     Choices = gm[i].Choices,
                     Code = gm[i].Code,
                     Dimensions = gm[i].Dimensions,
@@ -57,6 +65,38 @@ namespace Benchmark
                     ShouldShow = gm[i].ShouldShow
                 });
             }
+
+            return benchDictionary;
+        }
+
+        [Benchmark]
+        public BenchmarkModel findOnList()
+        {
+            var list = AddToList();
+
+            BenchmarkModel di = list.FirstOrDefault(c => c.Id == IdKeyOrValue);
+
+            return di;
+        }
+
+        [Benchmark]
+        public BenchmarkModel findOnDictionaryByKey()
+        {
+            var dic = AddToDictionary();
+
+            var di = dic[IdKeyOrValue];
+
+            return di;
+        }
+
+        [Benchmark]
+        public BenchmarkModel findOnDictionaryByValue()
+        {
+            var dic = AddToDictionary();
+
+            var di = dic.FirstOrDefault(d => d.Value.Id == IdKeyOrValue).Value;
+
+            return di;
         }
 
         public List<BenchmarkModel> getJson(string path)

@@ -7,7 +7,7 @@ namespace Benchmark
     {
         private static void Main(string[] args)
         {
-            var result = BenchmarkRunner.Run<Demo>();
+            var result = BenchmarkRunner.Run(typeof(Demo).Assembly);
 
             Console.WriteLine(result);
 
