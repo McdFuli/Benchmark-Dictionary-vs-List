@@ -4,7 +4,7 @@ namespace Benchmark
 {
     public class BenchmarkModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public List<Dimension> Dimensions { get; set; }
 
         public PriceTags PriceTags { get; set; }

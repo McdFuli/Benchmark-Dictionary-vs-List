@@ -8,7 +8,7 @@ namespace Benchmark
     public class Demo
     {
         private readonly string path = Path.Combine(AppContext.BaseDirectory, "JSON\\data.json");
-        private const int IdKeyOrValue = 700;
+        private const string IdKeyOrValue = "8957_958";
 
         public Demo()
         {
@@ -21,49 +21,55 @@ namespace Benchmark
 
             List<BenchmarkModel> gm = getJson(path);
 
-            foreach (var benc in gm)
+            for (int j = 0; j < 10000; j++)
             {
                 int i = 0;
-                benchList.Add(new BenchmarkModel()
+                foreach (var benc in gm)
                 {
-                    Id = i,
-                    Choices = benc.Choices,
-                    Code = benc.Code,
-                    Dimensions = benc.Dimensions,
-                    Images = benc.Images,
-                    IsInOutage = benc.IsInOutage,
-                    Names = benc.Names,
-                    PriceTags = benc.PriceTags,
-                    SelectedGrill = benc.SelectedGrill,
-                    ShouldShow = benc.ShouldShow
-                });
-                i++;
+                    benchList.Add(new BenchmarkModel()
+                    {
+                        Id = $"{j}_{i}",
+                        Choices = benc.Choices,
+                        Code = benc.Code,
+                        Dimensions = benc.Dimensions,
+                        Images = benc.Images,
+                        IsInOutage = benc.IsInOutage,
+                        Names = benc.Names,
+                        PriceTags = benc.PriceTags,
+                        SelectedGrill = benc.SelectedGrill,
+                        ShouldShow = benc.ShouldShow
+                    });
+                    i++;
+                }
             }
             return benchList;
         }
 
         [Benchmark]
-        public Dictionary<int, BenchmarkModel> AddToDictionary()
+        public Dictionary<string, BenchmarkModel> AddToDictionary()
         {
-            var benchDictionary = new Dictionary<int, BenchmarkModel>();
+            var benchDictionary = new Dictionary<string, BenchmarkModel>();
 
             var gm = getJson(path);
 
-            for (int i = 0; i < gm.Count; i++)
+            for (int j = 0; j < 10000; j++)
             {
-                benchDictionary.Add(i, new BenchmarkModel()
+                for (int i = 0; i < gm.Count; i++)
                 {
-                    Id = i,
-                    Choices = gm[i].Choices,
-                    Code = gm[i].Code,
-                    Dimensions = gm[i].Dimensions,
-                    Images = gm[i].Images,
-                    IsInOutage = gm[i].IsInOutage,
-                    Names = gm[i].Names,
-                    PriceTags = gm[i].PriceTags,
-                    SelectedGrill = gm[i].SelectedGrill,
-                    ShouldShow = gm[i].ShouldShow
-                });
+                    benchDictionary.Add($"{j}_{i}", new BenchmarkModel()
+                    {
+                        Id = $"{j}_{i}",
+                        Choices = gm[i].Choices,
+                        Code = $"{gm[i].Code}",
+                        Dimensions = gm[i].Dimensions,
+                        Images = gm[i].Images,
+                        IsInOutage = gm[i].IsInOutage,
+                        Names = gm[i].Names,
+                        PriceTags = gm[i].PriceTags,
+                        SelectedGrill = gm[i].SelectedGrill,
+                        ShouldShow = gm[i].ShouldShow
+                    });
+                }
             }
 
             return benchDictionary;
